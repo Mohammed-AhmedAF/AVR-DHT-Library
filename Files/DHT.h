@@ -15,7 +15,7 @@
 //------ Headers ------//
 #include <util/delay.h>
 #include <avr/io.h> 
-#include "IO_macros.h"
+#include "IO_MACROS.h"
 #include "DHT_CONFIG.h"
 //----------------------//
 
