@@ -16,7 +16,7 @@
 #include <util/delay.h>
 #include <avr/io.h> 
 #include "IO_macros.h"
-#include "DHT_Config.h"
+#include "DHT_CONFIG.h"
 //----------------------//
 
 //----- Auxiliary data -------------------//
