@@ -15,7 +15,7 @@
 //------ Headers ------//
 #include <util/delay.h>
 #include <avr/io.h> 
-#include "IO_MACROS.h"
+#include "IO_macros.h"
 #include "DHT_CONFIG.h"
 //----------------------//
 
@@ -23,15 +23,15 @@
 #define DHT11						 1
 #define DHT22						 2
 
-#define DHT_DELAY_SETUP				2000
+#define _DHT_DELAY_SETUP				2000
 
 enum DHT_STATUS
 {
-	FALSE_HUMIDITY = -4,
-	FALSE_TEMPERATURE = -3,
-	CHECKSUM = -2,
-	TIMEOUT = -1,
-	OK = 1
+	DHT_OK,
+	DHT_ERROR_HUMIDITY,
+	DHT_ERROR_TEMPERATURE,
+	DHT_ERROR_CHECKSUM,
+	DHT_ERROR_TIMEOUT
 };
 //-----------------------------------------//
 
