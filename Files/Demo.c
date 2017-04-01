@@ -1,4 +1,5 @@
 //Headers
+#include <util/delay.h>
 #include "DHT.h"
 
 int main(void)
@@ -12,13 +13,13 @@ int main(void)
 	DHT_setup();
 	
 	//Loop
-	while(1)
+	while (1)
 	{
 		//Read from sensor
 		status = DHT_read(temp, hum);
 	
 		//Check status
-		if (status == OK)
+		if (status == DHT_OK)
 		{
 			//Print temperature
 			//print(temp[0]);
@@ -26,11 +27,11 @@ int main(void)
 			//Print humidity
 			//print(hum[0]);
 		}
-		else if (status == CHECKSUM)
+		else if (status == DHT_ERROR_CHECKSUM)
 		{
 			//Do something
 		}
-		else if (status == TIMEOUT)
+		else if (status == DHT_ERROR_TIMEOUT)
 		{
 			//Do something else
 		}
