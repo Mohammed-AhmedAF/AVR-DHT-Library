@@ -2,7 +2,7 @@
 #define IO_MACROS_H_INCLUDED
 /*
 ||
-||  Filename:	 		IO_macros.h
+||  Filename:	 		IO_MACROS.h
 ||  Title: 			    IO manipulation macros
 ||  Author: 			Efthymios Koktsidis
 ||	Email:				efthymios.ks@gmail.com
@@ -53,5 +53,7 @@
 #define OUTPUT		!INPUT
 #define LOW			0
 #define HIGH		!LOW
+#define FALSE		0
+#define TRUE		!FALSE
 //------------------
 #endif
