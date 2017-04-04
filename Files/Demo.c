@@ -5,7 +5,7 @@
 int main(void)
 {
 	//Variables
-	enum DHT_STATUS status =OK;	//Return status of sensor
+	uint8_t status = DHT_OK;	//Return status of sensor
 	double temp[1], hum[1];		//Return values of sensor - Must be pointers or more preferably size-one arrays
 	temp[0] = hum[0] = 0;
 
@@ -16,8 +16,10 @@ int main(void)
 	while (1)
 	{
 		//Read from sensor
-		status = DHT_read(temp, hum);
-	
+		DHT_read(temp, hum);
+		//Get the status of the last performed reading
+		status = DHT_status();
+		
 		//Check status
 		if (status == DHT_OK)
 		{
