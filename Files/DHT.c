@@ -1,17 +1,19 @@
 ﻿#include "DHT.h"
 
 //----- Auxiliary data ----------//
+enum DHT_STATUS_t _DHT_STATUS;
+
 #if (DHT_TYPE == DHT11)
 	#define _DHT_TEMP_MIN	0
 	#define _DHT_TEMP_MAX	50
-	#define _DHT_HUM_MIN		20
-	#define _DHT_HUM_MAX		90
+	#define _DHT_HUM_MIN	20
+	#define _DHT_HUM_MAX	90
 	#define _DHT_DELAY_READ	50
 #elif (DHT_TYPE == DHT22)
 	#define _DHT_TEMP_MIN	-40
 	#define _DHT_TEMP_MAX	80
-	#define _DHT_HUM_MIN		0
-	#define _DHT_HUM_MAX		100
+	#define _DHT_HUM_MIN	0
+	#define _DHT_HUM_MAX	100
 	#define _DHT_DELAY_READ	20
 #endif
 //-------------------------------//
@@ -25,18 +27,24 @@ static double dataToHum(uint8_t x1, uint8_t x2);
 void DHT_setup(void)
 {
 	_delay_ms(_DHT_DELAY_SETUP);
+	_DHT_STATUS = DHT_OK;
 }
 
-int8_t DHT_readRaw(uint8_t arr[4])
+enum DHT_STATUS_t DHT_status(void)
+{
+	return (_DHT_STATUS);
+}
+
+void DHT_readRaw(uint8_t arr[4])
 {
 	uint8_t data[5] = {0, 0, 0, 0, 0};
-	uint8_t r, retries, i;
-	enum DHT_STATUS j;
-	r = DHT_OK;
+	uint8_t retries, i;
+	int8_t j;
+	_DHT_STATUS = DHT_OK;
 	retries = i = j = 0;
 
 	//----- Step 1 - Start communication -----
-	if (r == DHT_OK)
+	if (_DHT_STATUS == DHT_OK)
 	{
 		//Request data
 		digitalWrite(DHT_PIN, LOW);			//DHT_PIN = 0
@@ -55,7 +63,7 @@ int8_t DHT_readRaw(uint8_t arr[4])
 			retries += 2;
 			if (retries > 60)
 			{
-				r = DHT_ERROR_TIMEOUT;				//Timeout error
+				_DHT_STATUS = DHT_ERROR_TIMEOUT;	//Timeout error
 				break;
 			}
 		}
@@ -63,7 +71,7 @@ int8_t DHT_readRaw(uint8_t arr[4])
 	//----------------------------------------
 
 	//----- Step 2 - Wait for response -----	
-	if (r == DHT_OK)
+	if (_DHT_STATUS == DHT_OK)
 	{
 		//Response sequence began
 		//Wait for the first response to finish (low for ~80us)
@@ -74,7 +82,7 @@ int8_t DHT_readRaw(uint8_t arr[4])
 			retries += 2;
 			if (retries > 100)
 			{
-				r = DHT_ERROR_TIMEOUT;			//Timeout error
+				_DHT_STATUS = DHT_ERROR_TIMEOUT;	//Timeout error
 				break;
 			}
 		}
@@ -86,7 +94,7 @@ int8_t DHT_readRaw(uint8_t arr[4])
 			retries += 2;
 			if (retries > 100)
 			{
-				r = DHT_ERROR_TIMEOUT;			//Timeout error
+				_DHT_STATUS = DHT_ERROR_TIMEOUT;	//Timeout error
 				break;
 			}
 		}
@@ -94,7 +102,7 @@ int8_t DHT_readRaw(uint8_t arr[4])
 	//--------------------------------------
 
 	//----- Step 3 - Data transmission -----
-	if (r == DHT_OK)
+	if (_DHT_STATUS == DHT_OK)
 	{
 		//Reading 5 bytes, bit by bit
 		for (i = 0 ; i < 5 ; i++)
@@ -108,19 +116,19 @@ int8_t DHT_readRaw(uint8_t arr[4])
 					retries += 2;
 					if (retries > 70)
 					{
-						r = DHT_ERROR_TIMEOUT;				//Timeout error
-						j = -1;						//Break inner for-loop
-						i = 5;						//Break outer for-loop
-						break;						//Break while loop
+						_DHT_STATUS = DHT_ERROR_TIMEOUT;	//Timeout error
+						j = -1;								//Break inner for-loop
+						i = 5;								//Break outer for-loop
+						break;								//Break while loop
 					}
 				}
 
-				if (r == DHT_OK)
+				if (_DHT_STATUS == DHT_OK)
 				{
 					//We read data bit || 26-28us means '0' || 70us means '1'
-					_delay_us(35);					//Wait for more than 28us
-					if (digitalRead(DHT_PIN))		//If HIGH
-						bitSet(data[i], j);			//bit = '1'
+					_delay_us(35);							//Wait for more than 28us
+					if (digitalRead(DHT_PIN))				//If HIGH
+						bitSet(data[i], j);					//bit = '1'
 
 					retries = 0;
 					while(digitalRead(DHT_PIN))
@@ -129,7 +137,7 @@ int8_t DHT_readRaw(uint8_t arr[4])
 						retries += 2;
 						if (retries > 100)
 						{
-							r = DHT_ERROR_TIMEOUT;			//Timeout error
+							_DHT_STATUS = DHT_ERROR_TIMEOUT;	//Timeout error
 							break;
 						}
 					}
@@ -140,10 +148,12 @@ int8_t DHT_readRaw(uint8_t arr[4])
 
 
 	//----- Step 4 - Check checksum and return data -----
-	if (r == DHT_OK)
+	if (_DHT_STATUS == DHT_OK)
 	{	
 		if (((uint8_t)(data[0] + data[1] + data[2] + data[3])) != data[4])
-			r = DHT_OK;					//Checksum error
+		{
+			_DHT_STATUS = DHT_ERROR_CHECKSUM;	//Checksum error
+		}
 		else
 		{
 			//Build returning array
@@ -157,64 +167,55 @@ int8_t DHT_readRaw(uint8_t arr[4])
 		}
 	}
 	//---------------------------------------------------
-
-	return r;							//Return status
 }
 
-int8_t DHT_readTemp(double *temp)
+void DHT_readTemp(double *temp)
 {
-	enum DHT_STATUS r = DHT_OK;
 	uint8_t data[4] = {0, 0, 0, 0};
 			
 	//Read data
-	r = DHT_readRaw(data);
+	DHT_readRaw(data);
 	
 	//If read successfully
-	if (r == DHT_OK)
+	if (_DHT_STATUS == DHT_OK)
 	{
 		//Calculate value
 		*temp = dataToTemp(data[2], data[3]);
 		
 		//Check value
 		if ((*temp < _DHT_TEMP_MIN) || (*temp > _DHT_TEMP_MAX))
-			r = DHT_ERROR_TEMPERATURE;
+			_DHT_STATUS = DHT_ERROR_TEMPERATURE;
 	}
-	
-	return r;
 }
 
-int8_t DHT_readHum(double *hum)
+void DHT_readHum(double *hum)
 {
-	enum DHT_STATUS r = DHT_OK;
 	uint8_t data[4] = {0, 0, 0, 0};
 	
 	//Read data
-	r = DHT_readRaw(data);
+	DHT_readRaw(data);
 	
 	//If read successfully
-	if (r == DHT_OK)
+	if (_DHT_STATUS == DHT_OK)
 	{
 		//Calculate value
 		*hum = dataToHum(data[0], data[1]);
 				
 		//Check value
 		if ((*hum < _DHT_HUM_MIN) || (*hum > _DHT_HUM_MAX))
-			r = DHT_ERROR_HUMIDITY;
+			_DHT_STATUS = DHT_ERROR_HUMIDITY;
 	}
-	
-	return r;
 }
 
-int8_t DHT_read(double *temp, double *hum)
+void DHT_read(double *temp, double *hum)
 {
-	enum DHT_STATUS r = DHT_OK;
 	uint8_t data[4] = {0, 0, 0, 0};
 
 	//Read data
-	r = DHT_readRaw(data);
+	DHT_readRaw(data);
 	
 	//If read successfully
-	if (r == DHT_OK)
+	if (_DHT_STATUS == DHT_OK)
 	{	
 		//Calculate values
 		*temp = dataToTemp(data[2], data[3]);
@@ -222,12 +223,10 @@ int8_t DHT_read(double *temp, double *hum)
 		
 		//Check values
 		if ((*temp < _DHT_TEMP_MIN) || (*temp > _DHT_TEMP_MAX))
-			r = DHT_ERROR_TEMPERATURE;
+			_DHT_STATUS = DHT_ERROR_TEMPERATURE;
 		else if ((*hum < _DHT_HUM_MIN) || (*hum > _DHT_HUM_MAX))
-			r = DHT_ERROR_HUMIDITY;
+			_DHT_STATUS = DHT_ERROR_HUMIDITY;
 	}
-	
-	return r;
 }
 
 double DHT_convertToFahrenheit(double temp)
