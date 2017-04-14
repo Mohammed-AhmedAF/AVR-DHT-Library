@@ -16,6 +16,14 @@ A simple, yet clean, library to control the DHT11/DHT22 temperature and humidity
 
 ---
 
+**Compiler:**  
+AVR-GCC  
+  
+**Optimization Level:**  
+Optimize (-O1)  
+  
+--- 
+
 ![picture alt](https://raw.githubusercontent.com/efthymios-ks/AVR-DHT-Library/master/Demonstration.png)  
 
 ---
