@@ -169,42 +169,16 @@ void DHT_readRaw(uint8_t arr[4])
 	//---------------------------------------------------
 }
 
-void DHT_readTemp(double *temp)
+void DHT_readTemperature(double *temp)
 {
-	uint8_t data[4] = {0, 0, 0, 0};
-			
-	//Read data
-	DHT_readRaw(data);
-	
-	//If read successfully
-	if (_DHT_STATUS == DHT_OK)
-	{
-		//Calculate value
-		*temp = dataToTemp(data[2], data[3]);
-		
-		//Check value
-		if ((*temp < _DHT_TEMP_MIN) || (*temp > _DHT_TEMP_MAX))
-			_DHT_STATUS = DHT_ERROR_TEMPERATURE;
-	}
+	double waste[1];
+	DHT_read(temp, waste);
 }
 
-void DHT_readHum(double *hum)
+void DHT_readHumidity(double *hum)
 {
-	uint8_t data[4] = {0, 0, 0, 0};
-	
-	//Read data
-	DHT_readRaw(data);
-	
-	//If read successfully
-	if (_DHT_STATUS == DHT_OK)
-	{
-		//Calculate value
-		*hum = dataToHum(data[0], data[1]);
-				
-		//Check value
-		if ((*hum < _DHT_HUM_MIN) || (*hum > _DHT_HUM_MAX))
-			_DHT_STATUS = DHT_ERROR_HUMIDITY;
-	}
+	double waste[1];
+	DHT_read(waste, hum);
 }
 
 void DHT_read(double *temp, double *hum)

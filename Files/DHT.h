@@ -39,8 +39,8 @@ enum DHT_STATUS_t
 void DHT_setup(void);
 enum DHT_STATUS_t DHT_status(void);
 void DHT_readRaw(uint8_t arr[4]);
-void DHT_readTemp(double *temp);
-void DHT_readHum(double *hum);
+void DHT_readTemperature(double *temp);
+void DHT_readHumidity(double *hum);
 void DHT_read(double *temp, double *hum);
 double DHT_convertToFahrenheit(double temp);
 double DHT_convertToKelvin(double temp);
