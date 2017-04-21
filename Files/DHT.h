@@ -13,6 +13,7 @@
 */
 
 //------ Headers ------//
+#include <inttypes.h>
 #include <util/delay.h>
 #include <avr/io.h> 
 #include "IO_MACROS.h"
