@@ -16,6 +16,11 @@ A simple, yet clean, library to control the DHT11/DHT22 temperature and humidity
 
 ---
 
+**Memory usage:**  
++ Program: 0 bytes  
++ Data: 1 byte  
+  + DHT status: 1 byte  
+  
 **Compiler:**  
 AVR-GCC  
   
