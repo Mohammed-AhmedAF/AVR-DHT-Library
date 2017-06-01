@@ -34,11 +34,12 @@ enum DHT_STATUS_t
 	DHT_ERROR_CHECKSUM,
 	DHT_ERROR_TIMEOUT
 };
+
+extern enum DHT_STATUS_t DHT_STATUS;
 //-----------------------------------------//
 
 //----- Prototypes---------------------------//
 void DHT_setup(void);
-enum DHT_STATUS_t DHT_status(void);
 void DHT_readRaw(uint8_t arr[4]);
 void DHT_readTemperature(double *temp);
 void DHT_readHumidity(double *hum);

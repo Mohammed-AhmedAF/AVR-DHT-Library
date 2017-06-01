@@ -1,7 +1,7 @@
 ﻿#include "DHT.h"
 
 //----- Auxiliary data ----------//
-enum DHT_STATUS_t _DHT_STATUS;
+enum DHT_STATUS_t DHT_STATUS = DHT_OK;
 
 #if (DHT_TYPE == DHT11)
 	#define _DHT_TEMP_MIN	0
@@ -28,11 +28,6 @@ void DHT_setup(void)
 {
 	_delay_ms(_DHT_DELAY_SETUP);
 	_DHT_STATUS = DHT_OK;
-}
-
-enum DHT_STATUS_t DHT_status(void)
-{
-	return (_DHT_STATUS);
 }
 
 void DHT_readRaw(uint8_t arr[4])
