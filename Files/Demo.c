@@ -16,8 +16,6 @@ int main(void)
 	{
 		//Read from sensor
 		DHT_read(temp, hum);
-		//Get the status of the last performed reading
-		status = DHT_status();
 		
 		//Check status
 		switch (DHT_STATUS)
