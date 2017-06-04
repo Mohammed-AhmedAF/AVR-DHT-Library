@@ -7,8 +7,7 @@
 ||  Author: 			Efthymios Koktsidis
 ||	Email:				efthymios.ks@gmail.com
 ||  Compiler:		 	AVR-GCC
-||	Description:
-||	This library can drive DHT11 and DHT22 sensors.
+||	Description:		Driver DHT11 and DHT22 sensors.
 ||
 */
 
